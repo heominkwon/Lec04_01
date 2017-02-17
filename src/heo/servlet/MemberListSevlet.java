@@ -4,7 +4,6 @@ import heo.vo.Member;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -52,13 +51,17 @@ public class MemberListSevlet extends HttpServlet {
 //					this.getInitParameter("username"),
 //					this.getInitParameter("password"));
 	
-//3. context param 사용하기
+////3. context param 사용하기
+//			ServletContext sc = this.getServletContext();
+//			Class.forName(sc.getInitParameter("driver"));
+//			conn = DriverManager.getConnection(
+//					sc.getInitParameter("url"),
+//					sc.getInitParameter("username"),
+//					sc.getInitParameter("password"));
+//4. context param사용하고 AppInitServlet 초기화를 통한 연결정보 사용하기
 			ServletContext sc = this.getServletContext();
-			Class.forName(sc.getInitParameter("driver"));
-			conn = DriverManager.getConnection(
-					sc.getInitParameter("url"),
-					sc.getInitParameter("username"),
-					sc.getInitParameter("password"));
+			conn = (Connection)sc.getAttribute("conn");
+//-------------------------------------------------------------------------			
 			stmt = conn.createStatement();
 			//실행 결과 담기
 			rs = stmt.executeQuery(

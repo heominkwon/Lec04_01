@@ -37,11 +37,13 @@ public class MemberUpdateServlet extends HttpServlet {
 			//Servlet등록도 @로 하지 않고 Servlet등록을 통해서 함
 			
 			ServletContext sc = this.getServletContext();
-			Class.forName(sc.getInitParameter("driver"));
-			conn = DriverManager.getConnection(
-					sc.getInitParameter("url"),
-					sc.getInitParameter("username"),
-					sc.getInitParameter("password"));
+//			Class.forName(sc.getInitParameter("driver"));
+//			conn = DriverManager.getConnection(
+//					sc.getInitParameter("url"),
+//					sc.getInitParameter("username"),
+//					sc.getInitParameter("password"));
+			conn = (Connection)sc.getAttribute("conn");
+			
 			stmt = conn.createStatement();
 			rs = stmt.executeQuery(
 			"SELECT MNO,EMAIL,MNAME,CRE_DATE FROM MEMBERS" + 

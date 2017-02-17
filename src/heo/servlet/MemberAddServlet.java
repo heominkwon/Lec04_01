@@ -3,7 +3,6 @@ package heo.servlet;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 
 import javax.servlet.ServletContext;
@@ -55,11 +54,12 @@ public class MemberAddServlet extends HttpServlet {
 //					"12345678");
 			
 			ServletContext sc = this.getServletContext();
-			Class.forName(sc.getInitParameter("driver"));
-			conn = DriverManager.getConnection(
-					sc.getInitParameter("url"),
-					sc.getInitParameter("username"),
-					sc.getInitParameter("password"));			
+//			Class.forName(sc.getInitParameter("driver"));
+//			conn = DriverManager.getConnection(
+//					sc.getInitParameter("url"),
+//					sc.getInitParameter("username"),
+//					sc.getInitParameter("password"));
+			conn = (Connection)sc.getAttribute("conn");
 			
 			stmt = conn.prepareStatement(
 					"INSERT INTO MEMBERS(EMAIL,PWD,MNAME,CRE_DATE,MOD_DATE)"
