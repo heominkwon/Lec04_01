@@ -30,7 +30,7 @@ public class MemberDeleteServlet extends HttpServlet {
 //					sc.getInitParameter("url"),
 //					sc.getInitParameter("username"),
 //					sc.getInitParameter("password"));
-			conn = (Connection)sc.getAttribute("conn");
+			conn = (Connection) sc.getAttribute("conn");
 			stmt = conn.prepareStatement("DELETE FROM MEMBERS WHERE MNO=?");
 			stmt.setInt(1, Integer.parseInt(request.getParameter("no")));
 			stmt.executeUpdate();

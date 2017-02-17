@@ -12,7 +12,7 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.annotation.WebInitParam;
 
 @WebFilter(
-		urlPatterns="/*",
+		urlPatterns="*",
 		initParams={
 				@WebInitParam(name="encoding",value="UTF-8")
 		})
