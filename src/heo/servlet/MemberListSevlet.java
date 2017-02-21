@@ -1,12 +1,8 @@
 package heo.servlet;
 
-import heo.vo.Member;
+import heo.dao.MemberDao;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.ArrayList;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -27,9 +23,10 @@ public class MemberListSevlet extends HttpServlet {
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 	
-		Connection conn = null;
-		Statement stmt = null;
-		ResultSet rs = null;
+// dao로 변경
+		//Connection conn = null;
+		//Statement stmt = null;
+		//ResultSet rs = null;
 		
 		try {
 			
@@ -58,19 +55,25 @@ public class MemberListSevlet extends HttpServlet {
 //					sc.getInitParameter("url"),
 //					sc.getInitParameter("username"),
 //					sc.getInitParameter("password"));
-//4. context param사용하고 AppInitServlet 초기화를 통한 연결정보 사용하기
-			ServletContext sc = this.getServletContext();
-			conn = (Connection)sc.getAttribute("conn");
-//-------------------------------------------------------------------------			
-			stmt = conn.createStatement();
-			//실행 결과 담기
-			rs = stmt.executeQuery(
-					"SELECT MNO,MNAME,EMAIL,CRE_DATE" +
-					" FROM MEMBERS"+
-					" ORDER BY MNO ASC");
+////4. context param사용하고 AppInitServlet 초기화를 통한 연결정보 사용하기
+//			ServletContext sc = this.getServletContext();
+//			Connection conn = (Connection) sc.getAttribute("conn");
 			
-			//서버에 셋팅
-			response.setContentType("text/html; charset=UTF-8");
+		
+// dao 미사용			
+//		//	conn = (Connection)sc.getAttribute("conn");
+////-------------------------------------------------------------------------			
+//			stmt = conn.createStatement();
+//			//실행 결과 담기
+//			rs = stmt.executeQuery(
+//					"SELECT MNO,MNAME,EMAIL,CRE_DATE" +
+//					" FROM MEMBERS"+
+//					" ORDER BY MNO ASC");
+			
+
+			
+			
+			
 					
 // JSP로 변경하기			
 //			PrintWriter out = response.getWriter();
@@ -89,22 +92,40 @@ public class MemberListSevlet extends HttpServlet {
 //						"'>[삭제]</a><br>");
 //			}
 //			out.println("</body></html>");
+//			
+//			//member 클래스 배열을 생성
+//			ArrayList<Member> members = new ArrayList<Member>();
+//			// 데이터베이스에서 회원 정보를 가져와 Member에 담는다.
+//			// 그리고 Member객체를 ArrayList에 추가한다.
+//			while(rs.next()) {
+//				members.add(new Member()
+//				            .setNo(rs.getInt("MNO"))
+//							.setName(rs.getString("MNAME"))
+//							.setEmail(rs.getString("EMAIL"))
+//							.setCreatedDate(rs.getDate("CRE_DATE"))	);
+//			}
+//			
+//			// request에 회원 목록 데이터 보관 
+//			// 클라이언트에 셋팅
+//			request.setAttribute("members", members); 
 			
-			//member 클래스 배열을 생성
-			ArrayList<Member> members = new ArrayList<Member>();
-			// 데이터베이스에서 회원 정보를 가져와 Member에 담는다.
-			// 그리고 Member객체를 ArrayList에 추가한다.
-			while(rs.next()) {
-				members.add(new Member()
-				            .setNo(rs.getInt("MNO"))
-							.setName(rs.getString("MNAME"))
-							.setEmail(rs.getString("EMAIL"))
-							.setCreatedDate(rs.getDate("CRE_DATE"))	);
-			}
+////5. dao사용
+//			ServletContext sc = this.getServletContext();
+//			Connection conn = (Connection) sc.getAttribute("conn");
+//			
+//			MemberDao memberDao = new MemberDao();
+//			memberDao.setConnection(conn);
 			
-			// request에 회원 목록 데이터 보관 
-			// 클라이언트에 셋팅
-			request.setAttribute("members", members); 
+//6. contextLoadListener 사용하기
+			ServletContext sc = this.getServletContext();
+			MemberDao memberDao = (MemberDao)sc.getAttribute("memberDao");
+			
+			
+			request.setAttribute("members", memberDao.selectList());
+			
+			//서버에 셋팅
+			response.setContentType("text/html; charset=UTF-8");
+						
 			
 			//JSP출력 클라이언트로 위임
 			RequestDispatcher rd = request.getRequestDispatcher("/member/MemberList.jsp");
@@ -113,14 +134,16 @@ public class MemberListSevlet extends HttpServlet {
 			
 			
 		} catch(Exception e){
+			e.printStackTrace();
 			request.setAttribute("error", e);
 			RequestDispatcher rd = request.getRequestDispatcher("/Error.jsp");
-			rd.include(request, response);
-		} finally {
-			try { if(rs != null) rs.close();} catch(Exception e){}
-			try { if(stmt != null) stmt.close();} catch(Exception e){}
-			//try { if(conn != null) conn.close();} catch(Exception e){}
+			rd.forward(request, response);
 		}
+//		} finally {
+//			try { if(rs != null) rs.close();} catch(Exception e){}
+//			try { if(stmt != null) stmt.close();} catch(Exception e){}
+//			//try { if(conn != null) conn.close();} catch(Exception e){}
+//		}
 		
 		
 	}

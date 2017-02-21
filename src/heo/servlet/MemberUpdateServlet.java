@@ -1,13 +1,10 @@
 package heo.servlet;
 
+import heo.dao.MemberDao;
 import heo.vo.Member;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -25,8 +22,8 @@ public class MemberUpdateServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		Connection conn = null;
-		Statement stmt = null;
-		ResultSet rs = null;
+		//Statement stmt = null;
+		//ResultSet rs = null;
 		
 		try {
 			//DriverManager.registerDriver(new com.mysql.jdbc.Driver());
@@ -37,33 +34,48 @@ public class MemberUpdateServlet extends HttpServlet {
 			
 			//드라이버 등록을 web.xml에서 Servlet init파라미터를 이용
 			//Servlet등록도 @로 하지 않고 Servlet등록을 통해서 함
-			
-			ServletContext sc = this.getServletContext();
-//			Class.forName(sc.getInitParameter("driver"));
-//			conn = DriverManager.getConnection(
-//					sc.getInitParameter("url"),
-//					sc.getInitParameter("username"),
-//					sc.getInitParameter("password"));
-			conn = (Connection)sc.getAttribute("conn");
-			
-			stmt = conn.createStatement();
-			rs = stmt.executeQuery(
-			"SELECT MNO,EMAIL,MNAME,CRE_DATE FROM MEMBERS" + 
-			" WHERE MNO=" + request.getParameter("no"));	
-//			rs.next();
-			if(rs.next()){
-				request.setAttribute("member", 
-						new Member()
-							.setNo(rs.getInt("MNO"))
-							.setEmail(rs.getString("EMAIL"))
-							.setName(rs.getString("MNAME"))
-							.setCreatedDate(rs.getDate("CRE_DATE")));
-			} else{
-				throw new Exception("해당 번호의 회원을 찾을 수 없습니다.");
-			}
+//			
+//			ServletContext sc = this.getServletContext();
+////			Class.forName(sc.getInitParameter("driver"));
+////			conn = DriverManager.getConnection(
+////					sc.getInitParameter("url"),
+////					sc.getInitParameter("username"),
+////					sc.getInitParameter("password"));
+//			conn = (Connection)sc.getAttribute("conn");
+//			
+//			stmt = conn.createStatement();
+//			rs = stmt.executeQuery(
+//			"SELECT MNO,EMAIL,MNAME,CRE_DATE FROM MEMBERS" + 
+//			" WHERE MNO=" + request.getParameter("no"));	
+////			rs.next();
+//			if(rs.next()){
+//				request.setAttribute("member", 
+//						new Member()
+//							.setNo(rs.getInt("MNO"))
+//							.setEmail(rs.getString("EMAIL"))
+//							.setName(rs.getString("MNAME"))
+//							.setCreatedDate(rs.getDate("CRE_DATE")));
+//			} else{
+//				throw new Exception("해당 번호의 회원을 찾을 수 없습니다.");
+//			}
 			
 			//서버에 셋팅
 			//response.setContentType("text/html; charset=UTF-8");
+//			 ServletContext sc = this.getServletContext();
+//		      conn = (Connection) sc.getAttribute("conn"); 
+//
+//		      MemberDao memberDao = new MemberDao();
+//		      memberDao.setConnection(conn);
+		      
+//		      6.contextlistener에서 연결하기	
+		      ServletContext sc = this.getServletContext();
+			  MemberDao memberDao = (MemberDao)sc.getAttribute("memberDao");
+		       
+		      Member member = memberDao.selectOne(
+		          Integer.parseInt(request.getParameter("no")));
+
+		      request.setAttribute("member", member);
+
 			
 			RequestDispatcher rd = request.getRequestDispatcher(
 					"/member/MemberUpdateForm.jsp");
@@ -87,12 +99,11 @@ public class MemberUpdateServlet extends HttpServlet {
 //			out.println("</body></html>");
 				
 		} catch (Exception e) {
-			throw new ServletException(e);
+			 e.printStackTrace();
+		      request.setAttribute("error", e);
+		      RequestDispatcher rd = request.getRequestDispatcher("/Error.jsp");
+		      rd.forward(request, response);
 			
-		} finally {
-			try {if (rs != null) rs.close();} catch(Exception e) {}
-			try {if (stmt != null) stmt.close();} catch(Exception e) {}
-			//try {if (conn != null) conn.close();} catch(Exception e) {}
 		}
 	}
 
@@ -100,26 +111,43 @@ public class MemberUpdateServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		Connection conn = null;
-		PreparedStatement stmt = null;
+		//PreparedStatement stmt = null;
 
 //1. web.xml에서 filter로 처리
 		//request.setCharacterEncoding("UTF-8");
 			
 		try {
+// 4. context			
+//			ServletContext sc = this.getServletContext();
+//			Class.forName(sc.getInitParameter("driver"));
+//			conn = DriverManager.getConnection(
+//					sc.getInitParameter("url"),
+//					sc.getInitParameter("username"),
+//					sc.getInitParameter("password"));
+//			stmt = conn.prepareStatement(
+//					"UPDATE MEMBERS SET EMAIL=?,MNAME=?,MOD_DATE=now()"
+//					+ " WHERE MNO=?");
+//			stmt.setString(1, request.getParameter("email"));
+//			stmt.setString(2, request.getParameter("name"));
+//			stmt.setInt(3, Integer.parseInt(request.getParameter("no")));
+//			stmt.executeUpdate();
+			
+//// 5. dao
+//			ServletContext sc = this.getServletContext();
+//			conn = (Connection)sc.getAttribute("conn");
+//			
+//			MemberDao memberDao = new MemberDao();
+//			memberDao.setConnection(conn);
+			
 			
 			ServletContext sc = this.getServletContext();
-			Class.forName(sc.getInitParameter("driver"));
-			conn = DriverManager.getConnection(
-					sc.getInitParameter("url"),
-					sc.getInitParameter("username"),
-					sc.getInitParameter("password"));
-			stmt = conn.prepareStatement(
-					"UPDATE MEMBERS SET EMAIL=?,MNAME=?,MOD_DATE=now()"
-					+ " WHERE MNO=?");
-			stmt.setString(1, request.getParameter("email"));
-			stmt.setString(2, request.getParameter("name"));
-			stmt.setInt(3, Integer.parseInt(request.getParameter("no")));
-			stmt.executeUpdate();
+			MemberDao memberDao = (MemberDao)sc.getAttribute("memberDao");
+			
+			memberDao.update(new Member()
+				.setNo(Integer.parseInt(request.getParameter("no")))
+				.setName(request.getParameter("name"))
+				.setEmail(request.getParameter("email")));
+				
 			
 			response.sendRedirect("list");
 			
@@ -130,10 +158,7 @@ public class MemberUpdateServlet extends HttpServlet {
 			request.setAttribute("error", e);
 			RequestDispatcher rd = request.getRequestDispatcher("/Error.jsp");
 			rd.forward(request, response);
-		} finally {
-			try {if (stmt != null) stmt.close();} catch(Exception e) {}
-		//	try {if (conn != null) conn.close();} catch(Exception e) {}
-		}
+		} 
 		
 	}
 	

@@ -1,5 +1,6 @@
 package heo.servlet;
 
+import heo.dao.MemberDao;
 import heo.vo.Member;
 
 import java.io.IOException;
@@ -29,38 +30,49 @@ public class LoginServlet extends HttpServlet {
 		ResultSet rs = null;
 		
 		try {
+			
 			ServletContext sc = this.getServletContext();
-			conn = (Connection) sc.getAttribute("conn");
-			stmt = conn.prepareStatement(
-					"SELECT MNAME, EMAIL FROM MEMBERS"
-					+ " WHERE EMAIL=? AND PWD=?");
-			stmt.setString(1, request.getParameter("email"));
-			stmt.setString(2, request.getParameter("password"));
-			rs = stmt.executeQuery();
-			if(rs.next()){
-				Member member = new Member()
-					.setEmail(rs.getString("EMAIL"))
-					.setName(rs.getString("MNAME"));
+			MemberDao memberDao = (MemberDao)sc.getAttribute("memberDao");
+			
+			Member member = memberDao.exist(request.getParameter("email"),
+					request.getParameter("password"));
+			
+			if(member != null){
 				HttpSession session = request.getSession();
 				session.setAttribute("member", member);
-				
 				response.sendRedirect("../member/list");		
 			} else {
 				RequestDispatcher rd = request.getRequestDispatcher(
 						"/auth/LogInFail.jsp");
 				rd.forward(request, response);
-			}
+			}		
+			
+			//ServletContext sc = this.getServletContext();
+			//conn = (Connection) sc.getAttribute("conn");
+//			stmt = conn.prepareStatement(
+//					"SELECT MNAME, EMAIL FROM MEMBERS"
+//					+ " WHERE EMAIL=? AND PWD=?");
+//			stmt.setString(1, request.getParameter("email"));
+//			stmt.setString(2, request.getParameter("password"));
+//			rs = stmt.executeQuery();
+//			if(rs.next()){
+//				Member member = new Member()
+//					.setEmail(rs.getString("EMAIL"))
+//					.setName(rs.getString("MNAME"));
+//				HttpSession session = request.getSession();
+//				session.setAttribute("member", member);
+//				
+//				response.sendRedirect("../member/list");		
+//			} else {
+//				RequestDispatcher rd = request.getRequestDispatcher(
+//						"/auth/LogInFail.jsp");
+//				rd.forward(request, response);
+//			}
 			
 			
 		} catch (Exception e) {
 			throw new ServletException(e);
-		} finally {
-			try {if (rs != null) rs.close();} catch (Exception e) {}
-			try {if (stmt != null) stmt.close();} catch (Exception e) {}
-			//try {if (conn != null) conn.close();} catch (Exception e) {
-				// TODO: handle exception
-			//}
-		}
+		} 
 		
 		
 	}

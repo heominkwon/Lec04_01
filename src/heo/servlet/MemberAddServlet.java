@@ -1,8 +1,10 @@
 package heo.servlet;
 
+import heo.dao.MemberDao;
+import heo.vo.Member;
+
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -45,27 +47,45 @@ public class MemberAddServlet extends HttpServlet {
 			HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		Connection conn = null;
-		PreparedStatement stmt = null;
+		//PreparedStatement stmt = null;
+		
 
 		try {
+// 4. context에서 읽어와서 실행하기
+//			ServletContext sc = this.getServletContext();
+//			conn = (Connection) sc.getAttribute("conn");  
+//			stmt = conn.prepareStatement(
+//					"INSERT INTO MEMBERS(EMAIL,PWD,MNAME,CRE_DATE,MOD_DATE)"
+//					+ " VALUES (?,?,?,NOW(),NOW())");
+//			stmt.setString(1, request.getParameter("email"));
+//			stmt.setString(2, request.getParameter("password"));
+//			stmt.setString(3, request.getParameter("name"));
+//			stmt.executeUpdate();
+			
+//// 5. dao에서 읽어와서 실행하기
+//			ServletContext sc = this.getServletContext();
+//			conn = (Connection) sc.getAttribute("conn"); 
+//			
+//			MemberDao memberDao = new MemberDao();
+//			memberDao.setConnection(conn);
+			
+// 6.contextlistener에서 연결하기			
 			ServletContext sc = this.getServletContext();
-			conn = (Connection) sc.getAttribute("conn");  
-			stmt = conn.prepareStatement(
-					"INSERT INTO MEMBERS(EMAIL,PWD,MNAME,CRE_DATE,MOD_DATE)"
-					+ " VALUES (?,?,?,NOW(),NOW())");
-			stmt.setString(1, request.getParameter("email"));
-			stmt.setString(2, request.getParameter("password"));
-			stmt.setString(3, request.getParameter("name"));
-			stmt.executeUpdate();
+			MemberDao memberDao = (MemberDao)sc.getAttribute("memberDao");
+			
+			memberDao.insert(new Member()
+				.setEmail(request.getParameter("email"))
+				.setPassword(request.getParameter("password"))
+				.setName(request.getParameter("name")));
 			
 			response.sendRedirect("list");
 			
 		} catch (Exception e) {
-			throw new ServletException(e);
+			  e.printStackTrace();
+		      request.setAttribute("error", e);
+		      RequestDispatcher rd = request.getRequestDispatcher("/Error.jsp");
+		      rd.forward(request, response);
 			
-		} finally {
-			try {if (stmt != null) stmt.close();} catch(Exception e) {}
-			//try {if (conn != null) conn.close();} catch(Exception e) {}
 		}
 	}
 }
