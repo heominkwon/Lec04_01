@@ -3,7 +3,6 @@ package heo.servlet;
 import heo.dao.MemberDao;
 
 import java.io.IOException;
-import java.sql.Connection;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -19,7 +18,7 @@ public class MemberDeleteServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		Connection conn = null;
+		//Connection conn = null;
 		//PreparedStatement  stmt  = null;
 		
 		
@@ -50,7 +49,8 @@ public class MemberDeleteServlet extends HttpServlet {
 			memberDao.delete(Integer.parseInt(request.getParameter("no")));
 					
 			
-			response.sendRedirect("list");
+//			response.sendRedirect("list");
+			request.setAttribute("viewUrl", "redirect:list.do");
 							
 			
 		} catch (Exception e) {

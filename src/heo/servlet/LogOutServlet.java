@@ -19,7 +19,9 @@ public class LogOutServlet extends HttpServlet {
 		HttpSession session = request.getSession();
 		session.invalidate();
 		
-		response.sendRedirect("LoginForm.jsp");
+//		response.sendRedirect("LoginForm.jsp");
+		
+		request.setAttribute("viewUrl", "LoginForm.jsp");
 	}
 	
 	

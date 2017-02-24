@@ -24,9 +24,7 @@ public class MemberAddServlet extends HttpServlet {
 	protected void doGet(
 			HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		RequestDispatcher rd = request.getRequestDispatcher(
-				"/member/MemberForm.jsp");
-		rd.forward(request, response);
+		request.setAttribute("viewUrl", "/member/MemberForm.jsp");
 		
 //		response.setContentType("text/html; charset=UTF-8");
 //		PrintWriter out = response.getWriter();
@@ -73,12 +71,21 @@ public class MemberAddServlet extends HttpServlet {
 			ServletContext sc = this.getServletContext();
 			MemberDao memberDao = (MemberDao)sc.getAttribute("memberDao");
 			
-			memberDao.insert(new Member()
-				.setEmail(request.getParameter("email"))
-				.setPassword(request.getParameter("password"))
-				.setName(request.getParameter("name")));
 			
-			response.sendRedirect("list");
+			
+//			DispathcerServlet으로 변경			
+//			memberDao.insert(new Member()
+//				.setEmail(request.getParameter("email"))
+//				.setPassword(request.getParameter("password"))
+//				.setName(request.getParameter("name")));
+//			response.sendRedirect("list");
+			
+			Member member = (Member)request.getAttribute("member");
+			memberDao.insert(member);
+			
+			request.setAttribute("viewUrl", "redirect:list.do");
+			
+			
 			
 		} catch (Exception e) {
 			  e.printStackTrace();

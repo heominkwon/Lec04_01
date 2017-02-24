@@ -128,8 +128,10 @@ public class MemberListSevlet extends HttpServlet {
 						
 			
 			//JSP출력 클라이언트로 위임
-			RequestDispatcher rd = request.getRequestDispatcher("/member/MemberList.jsp");
-			rd.include(request, response);
+//			RequestDispatcher rd = request.getRequestDispatcher("/member/MemberList.jsp");
+//			rd.include(request, response);
+			
+			request.setAttribute("viewUrl", "/member/MemberList.jsp");
 			
 			
 			

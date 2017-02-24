@@ -75,11 +75,13 @@ public class MemberUpdateServlet extends HttpServlet {
 		          Integer.parseInt(request.getParameter("no")));
 
 		      request.setAttribute("member", member);
+		      
+		      request.setAttribute("viewUrl", "/member/MemberUpdateForm.jsp");
 
 			
-			RequestDispatcher rd = request.getRequestDispatcher(
-					"/member/MemberUpdateForm.jsp");
-			rd.forward(request, response);
+//			RequestDispatcher rd = request.getRequestDispatcher(
+//					"/member/MemberUpdateForm.jsp");
+//			rd.forward(request, response);
 //			response.setContentType("text/html; charset=UTF-8");
 //			PrintWriter out = response.getWriter();
 //			out.println("<html><head><title>회원정보</title></head>");
@@ -143,13 +145,18 @@ public class MemberUpdateServlet extends HttpServlet {
 			ServletContext sc = this.getServletContext();
 			MemberDao memberDao = (MemberDao)sc.getAttribute("memberDao");
 			
-			memberDao.update(new Member()
-				.setNo(Integer.parseInt(request.getParameter("no")))
-				.setName(request.getParameter("name"))
-				.setEmail(request.getParameter("email")));
-				
+//			memberDao.update(new Member()
+//				.setNo(Integer.parseInt(request.getParameter("no")))
+//				.setName(request.getParameter("name"))
+//				.setEmail(request.getParameter("email")));
+//				
+//			
+//			response.sendRedirect("list");
 			
-			response.sendRedirect("list");
+			Member member = (Member)request.getAttribute("member");
+			memberDao.update(member);
+			
+			request.setAttribute("viewUrl", "redirect:list.do");
 			
 			
 			

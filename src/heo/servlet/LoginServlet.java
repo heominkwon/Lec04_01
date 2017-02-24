@@ -4,11 +4,7 @@ import heo.dao.MemberDao;
 import heo.vo.Member;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -25,26 +21,32 @@ public class LoginServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		
-		Connection conn = null;
-		PreparedStatement stmt = null;
-		ResultSet rs = null;
-		
+//		Connection conn = null;
+//		PreparedStatement stmt = null;
+//		ResultSet rs = null;
+//		
 		try {
 			
 			ServletContext sc = this.getServletContext();
 			MemberDao memberDao = (MemberDao)sc.getAttribute("memberDao");
 			
-			Member member = memberDao.exist(request.getParameter("email"),
+			Member member = memberDao.exist(
+					request.getParameter("email"),
 					request.getParameter("password"));
 			
 			if(member != null){
+				System.out.println("test1");
 				HttpSession session = request.getSession();
 				session.setAttribute("member", member);
-				response.sendRedirect("../member/list");		
+//				response.sendRedirect("../member/list");
+		        request.setAttribute("viewUrl", "redirect:../member/list.do");
+		        System.out.println("test2");
+				
 			} else {
-				RequestDispatcher rd = request.getRequestDispatcher(
-						"/auth/LogInFail.jsp");
-				rd.forward(request, response);
+//				RequestDispatcher rd = request.getRequestDispatcher(
+//						"/auth/LogInFail.jsp");
+//				rd.forward(request, response);
+				request.setAttribute("viewUrl", "/auth/LoginFail.jsp");
 			}		
 			
 			//ServletContext sc = this.getServletContext();

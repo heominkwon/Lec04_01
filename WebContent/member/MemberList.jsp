@@ -17,7 +17,7 @@
 <body>
 <jsp:include page="/Header.jsp"/>
 <h1>회원목록</h1>
-<p><a href='add'>신규 회원</a></p>
+<p><a href='add.do'>신규 회원</a></p>
 <%
 // header의 jsp:useBean 정의로 변경, c태크 사용
 //ArrayList<Member> members = (ArrayList<Member>)request.getAttribute("members");
@@ -25,10 +25,10 @@
 %>
 <c:forEach var="member" items="${members}">
 ${member.no},
-<a href='update?no=${member.no}'>${member.name}</a>,
+<a href='update.do?no=${member.no}'>${member.name}</a>,
 ${member.email},
 ${member.createdDate}
-<a href='delete?no=${member.no}'>[삭제]</a><br>
+<a href='delete.do?no=${member.no}'>[삭제]</a><br>
 </c:forEach>
 <jsp:include page="/Tail.jsp"/>
 </body>

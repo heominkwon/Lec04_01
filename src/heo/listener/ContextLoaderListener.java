@@ -4,10 +4,12 @@ import heo.dao.MemberDao;
 
 import java.sql.SQLException;
 
+import javax.naming.InitialContext;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
+import javax.sql.DataSource;
 
 import org.apache.tomcat.dbcp.dbcp.BasicDataSource;
 
@@ -41,11 +43,16 @@ public class ContextLoaderListener implements ServletContextListener {
 //				sc.getInitParameter("username"),
 //				sc.getInitParameter("password"));
 			
-			ds = new BasicDataSource();
-			ds.setDriverClassName(sc.getInitParameter("driver"));
-			ds.setUrl(sc.getInitParameter("url"));
-			ds.setUsername(sc.getInitParameter("username"));
-			ds.setPassword(sc.getInitParameter("password"));
+//			ds = new BasicDataSource();
+//			ds.setDriverClassName(sc.getInitParameter("driver"));
+//			ds.setUrl(sc.getInitParameter("url"));
+//			ds.setUsername(sc.getInitParameter("username"));
+//			ds.setPassword(sc.getInitParameter("password"));
+			
+			//was context.xml설정 사용하기
+			InitialContext initialContext = new InitialContext();
+			DataSource ds = (DataSource)initialContext.lookup(
+					"java:comp/env/jdbc/myconn");
 			
 			MemberDao memberDao = new MemberDao();
 			//memberDao.setDBConnectionPool(ds);
@@ -57,7 +64,7 @@ public class ContextLoaderListener implements ServletContextListener {
 			
 			
 		} catch (Exception e) {
-			// TODO: handle exception
+			e.printStackTrace();
 		}
 		
 	}
